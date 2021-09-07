@@ -11,6 +11,7 @@ int main(){
     file.open("tablero.txt");
     for(int i = 0; i <8; i++){
         for(int j=0; j<8; j++){
+        	
 
             if(j == 1 || j == 6){
                 tablero[i][j] = 'P';
@@ -43,7 +44,8 @@ int main(){
 
     for(int i = 0; i<8; i++){
         for(int j =0; j<8; j++){
-            file << tablero[i][j]<<"\t";
+            file << tablero[i][j]<<"__|";
+            
         }
         file <<endl;
     }
