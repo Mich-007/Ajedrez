@@ -54,15 +54,41 @@ void llenado_de_tablero(){
     _getch();
 }
 
+bool eleccion_pieza(string pieza){
+    bool correcto = false;
+    if(pieza == "P"){
+        correcto = true;
+    }else if(pieza == "T"){
+        correcto = true;
+    }else if(pieza == "C"){
+        correcto = true;
+    }else if(pieza == "A"){
+        correcto = true;
+    }else if(pieza == "D"){
+        correcto = true;
+    }else if(pieza == "R"){
+        correcto = true;
+    }else{
+        correcto = false;
+    }
+    return  correcto;
+}
+
 /*void mov_Rey(){
 
 }*/
 
 
 int main(){
-    cout << "Elija la pieza que va a mover: "<<endl;
-    //cin >>;
-
+    string pieza=" ";
+    do {
+        cout << "Elija la pieza que va a mover (P, T, C, A, D, R): " << endl;
+        cin >> pieza;
+        eleccion_pieza(pieza);
+        if(eleccion_pieza(pieza)==false){
+            cout << "Pieza inexistente" << endl;
+        }
+    }while(eleccion_pieza(pieza)==false);
     llenado_de_tablero();
 
 
