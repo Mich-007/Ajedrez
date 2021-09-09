@@ -56,24 +56,28 @@ void llenado_de_tablero(){
 
 bool verificador_pieza(string pieza){
     bool correcto = false;
-    if(pieza == "P"){
-        correcto = true;
-    }else if(pieza == "T"){
-        correcto = true;
-    }else if(pieza == "C"){
-        correcto = true;
-    }else if(pieza == "A"){
-        correcto = true;
-    }else if(pieza == "D"){
-        correcto = true;
-    }else if(pieza == "R"){
-        correcto = true;
-    }else{
-        correcto = false;
+    for (int i = 0; i < piezas->size(); ++i) {
+        if(pieza == piezas[i]){
+            correcto = true;
+        } else{
+            correcto = false;
+        }
     }
     return  correcto;
 }
 
+/*
+void eleccion_pieza(string pieza){
+    bool correcto = false;
+    for (int i = 0; i < piezas->size(); ++i) {
+        if(pieza == piezas[i]){
+            correcto = true;
+        } else{
+            correcto = false;
+        }
+    }
+
+}*/
 /*void mov_Rey(){
 
 }*/
