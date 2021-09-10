@@ -1,7 +1,7 @@
 //PLANTILLA TABLERO AJEDREZ
 //Bibliotecas a usar en el codigo
 #include <iostream>
-#include "conio.h"
+//#include "conio.h"
 #include <fstream>
 using namespace std;
 string tablero[8][8] ={" "};
@@ -51,7 +51,7 @@ void llenado_de_tablero(){
         file <<endl;
     }
     file.close();
-    _getch();
+    //_getch();
 }
 
 bool verificador_pieza(string pieza){
