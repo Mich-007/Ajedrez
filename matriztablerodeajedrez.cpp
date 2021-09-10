@@ -68,21 +68,40 @@ bool verificador_pieza(string pieza){
 
 /*
 void eleccion_pieza(string pieza){
-    bool correcto = false;
-    for (int i = 0; i < piezas->size(); ++i) {
-        if(pieza == piezas[i]){
-            correcto = true;
-        } else{
-            correcto = false;
-        }
-    }
+  if(pieza == "T"){
 
-}*/
-/*void mov_Rey(){
+  }else if(pieza == "C"){
 
-}*/
+  }else if(pieza == "A"){
 
+  }else if(pieza == "D"){
 
+  }else if(pieza == "R"){
+
+  }else{
+
+  }
+}
+void mov_Rey(){
+
+}
+void mov_Torre(){
+
+}
+void mov_Arfil(){
+
+}
+void mov_Reina(){
+
+}
+void mov_Caballo(){
+
+}
+void mov_Peon(){
+
+}
+
+*/
 int main(){
     string pieza=" ";
     do {
