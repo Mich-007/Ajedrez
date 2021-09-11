@@ -10,7 +10,7 @@ char piezas[6]={'P', 'T', 'C', 'A', 'D', 'R'};
 ofstream file;
 
 
-
+//Funcion eleccion de pieza
 void eleccion_pieza(string jugada){
     for(int i = 0; i < piezas.size(); i++){
         if(jugada[0]==piezas[i]){
@@ -20,7 +20,7 @@ void eleccion_pieza(string jugada){
 }
 
 
-
+//Funcion movimiento de pieza: rey
 void mov_Rey(int posx, int posy){
 
 }
@@ -40,7 +40,7 @@ void mov_Peon(){
 
 }
 
-
+//Funcion principal
 int main(){
     string jugada=" ";
     int cont = 0;
