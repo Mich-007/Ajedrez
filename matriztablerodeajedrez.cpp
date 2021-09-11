@@ -6,13 +6,13 @@
 using namespace std;
 string tablero[8][8] ={" "};
 //string eleccion[4]={"Ar","Ab","D","I"};
-string piezas[6]={"P", "T", "C", "A", "D", "R"};
+char piezas[6]={'P', 'T', 'C', 'A', 'D', 'R'};
 ofstream file;
 
 
 
 void eleccion_pieza(string jugada){
-    for(int i = 0; i < piezas->size(); i++){
+    for(int i = 0; i < piezas.size(); i++){
         if(jugada[0]==piezas[i]){
 
         }
