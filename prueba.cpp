@@ -3,9 +3,16 @@
 #include <cstdlib>
 
 using namespace::std;
-int turno=1;
+string tablero[8][8];
+string piezas1[6]={"p1", "t1", "c1", "a1", "q1", "k1"};
+string piezas2[6]={"p2", "t2", "c2", "a2", "q2", "k2"};
+char number[8]={'1','2','3','4','5','6','7','8'};
+char letter[8]={'a','b','c','d','e','f','g','h'};
+int turno=0;
 
-void impTablero(string tablero[8][8])
+
+
+void impTablero()//string tablero[8][8])
 {
     int cont=0;
     cout<<"\311";
@@ -101,34 +108,91 @@ void impTablero(string tablero[8][8])
     }
 }
 
-void iniciaTablero(string tablero[8][8])
-{
-    for (int i=0;i<8;i++)
-    {
-        tablero[i][1]="p1";   //ubicación de peones
-        tablero[i][6]="p2";
-    }
+void llenado_de_tablerop1() {
 
-    tablero[0][0]="t1";
-    tablero[1][0]="c1";    //ubicación otras piezas jugador 1
-    tablero[2][0]="a1";
-    tablero[3][0]="q1";
-    tablero[4][0]="k1";
+    for(int i = 0; i <8; i++){
+        for(int j=0; j<8; j++){
+
+            if(i == 1){
+                tablero[j][i] = piezas1[0];
+
+
+            }else if((i==0) && (j==0|| j==7)){
+                tablero[j][i]=piezas1[1];
+
+
+            }else if((i==0) && (j==1|| j==6)){
+                tablero[j][i] = piezas1[2];
+
+
+            }else if((i==0) && (j==2|| j==5)){
+                tablero[j][i] = piezas1[3];
+
+
+            }else if(i==0  && (j==3)){
+                tablero[j][i]= piezas1[4];
+
+
+            }else if( i == 0  && (j==4)){
+                tablero[j][i]= piezas1[5];
+
+
+            }
+
+        }
+    }
     for (int i=5;i<8;i++)
     {
         tablero[i][0]=tablero[7-i][0];
     }
-    tablero[0][7]="t2";
-    tablero[1][7]="c2";
-    tablero[2][7]="a2";
-    tablero[3][7]="k2";    //ubicación otras piezas jugador 2
-    tablero[4][7]="q2";
+    for (int i=0;i<8;i++)
+    {
+        for (int j=0;j<8;j++)
+        {
+            if (tablero[i][j]=="\0")    //Dibujando espacitos vacíos
+            {
+                tablero[i][j]="  ";
+            }
+        }
+    }
+}
+void llenado_de_tablerop2() {
 
+    for(int i = 0; i <8; i++){
+        for(int j=0; j<8; j++){
+
+            if(i == 6){
+                tablero[j][i] = piezas2[0];
+
+
+            }else if((i ==7) && (j==0|| j==7)){
+                tablero[j][i]=piezas2[1];
+
+
+            }else if((i==7) && (j==1|| j==6)){
+                tablero[j][i] = piezas2[2];
+
+
+            }else if((i==7) && (j==2|| j==5)){
+                tablero[j][i] = piezas2[3];
+
+
+            }else if(i==7  && (j==3)){
+                tablero[j][i]= piezas2[4];
+
+
+            }else if( i == 7  && (j==4)){
+                tablero[j][i]= piezas2[5];
+
+
+            }
+
+        }
+    }
     for (int i=5;i<8;i++)
     {
         tablero[i][7]=tablero[7-i][7];
     }
-
     for (int i=0;i<8;i++)
     {
         for (int j=0;j<8;j++)
@@ -141,7 +205,7 @@ void iniciaTablero(string tablero[8][8])
     }
 }
 
-bool movimientoPieza (int xinic,int yinic,int xfin, int yfin, string tablero[8][8])
+bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[8][8])
 {
     bool saltoPieza=false;
     int a;
@@ -498,89 +562,19 @@ bool movimientoPieza (int xinic,int yinic,int xfin, int yfin, string tablero[8][
         }
     }
 }
-int c2i (char a)
-{
-    switch (a)
-    {
-        case '1':
-            return 0;
-            break;
-        case '2':
-            return 1;
-            break;
-        case '3':
-            return 2;
-            break;
-        case '4':
-            return 3;
-            break;
-        case '5':
-            return 4;
-            break;
-        case '6':
-            return 5;
-            break;
-        case '7':
-            return 6;
-            break;
-        case '8':
-            return 7;
-            break;
-        case 'A':
-            return 0;
-            break;
-        case 'B':
-            return 1;
-            break;
-        case 'C':
-            return 2;
-            break;
-        case 'D':
-            return 3;
-            break;
-        case 'E':
-            return 4;
-            break;
-        case 'F':
-            return 5;
-            break;
-        case 'G':
-            return 6;
-            break;
-        case 'a':
-            return 0;
-            break;
-        case 'b':
-            return 1;
-            break;
-        case 'c':
-            return 2;
-            break;
-        case 'd':
-            return 3;
-            break;
-        case 'e':
-            return 4;
-            break;
-        case 'f':
-            return 5;
-            break;
-        case 'g':
-            return 6;
-            break;
-        case 'h':
-            return 7;
-            break;
 
-        case 'H':
-            return 7;
-            break;
-        default:
-            return 0;
-            break;
+int c2i( char a) {
+    int cont = 0;
+    for (int i = 0; i < 8; ++i) {
+        if (a == number[i] || a == letter[i]) {
+            cont = i;
+        }
+
     }
+    return cont;
 }
-void celdaInicial (char *celdInicLet, char *celdInicNum, string tablero[8][8])
+
+void celdaInicial (char *celdInicLet, char *celdInicNum)//, string tablero[8][8])
 {
     bool turnoCorrecto=false;
     while (turnoCorrecto==false)
@@ -602,8 +596,8 @@ void celdaInicial (char *celdInicLet, char *celdInicNum, string tablero[8][8])
             cout<<"La celda ingresada no es valida, ingrese un numero entre 1 y 8"<<endl;
             cin>>*celdInicNum;
         }
-        if (((tablero[c2i(*celdInicLet)][c2i(*celdInicNum)][1]=='1')&&(turno==1))
-            ||((tablero[c2i(*celdInicLet)][c2i(*celdInicNum)][1]=='2')&&(turno==(-1))))
+        if (((tablero[c2i(*celdInicLet)][c2i(*celdInicNum)][1]=='1')&&(turno%2==0))
+            ||((tablero[c2i(*celdInicLet)][c2i(*celdInicNum)][1]=='2')&&(turno%2!=0)))
         {
             turnoCorrecto=true;
         }
@@ -625,7 +619,7 @@ void celdaInicial (char *celdInicLet, char *celdInicNum, string tablero[8][8])
     }
 }
 
-void celdaFinal (char *celdFinLet, char *celdFinNum, string tablero[8][8])
+void celdaFinal (char *celdFinLet, char *celdFinNum)//, string tablero[8][8])
 {
     bool turnoCorrecto=false;
 
@@ -649,8 +643,8 @@ void celdaFinal (char *celdFinLet, char *celdFinNum, string tablero[8][8])
             cout<<"La celda ingresada no es valida, ingrese un numero entre 1 y 8"<<endl;
             cin>>*celdFinNum;
         }
-        if (((tablero[c2i(*celdFinLet)][c2i(*celdFinNum)][1]=='1')&&(turno==1))
-            ||((tablero[c2i(*celdFinLet)][c2i(*celdFinNum)][1]=='2')&&(turno==(-1))))
+        if (((tablero[c2i(*celdFinLet)][c2i(*celdFinNum)][1]=='1')&&(turno%2==0))
+            ||((tablero[c2i(*celdFinLet)][c2i(*celdFinNum)][1]=='2')&&(turno%2!=0)))
         {
             turnoCorrecto=false;
             cout<<"No puedes comerte piezas aliadas"<<endl;
@@ -666,7 +660,7 @@ void celdaFinal (char *celdFinLet, char *celdFinNum, string tablero[8][8])
     }
 }
 
-void moverPieza(string tablero[8][8])
+void moverPieza()//string tablero[8][8])
 {
     char celdInicLet='z';
     char celdInicNum='z';
@@ -676,8 +670,8 @@ void moverPieza(string tablero[8][8])
 
     while (verificador!='s')
     {
-        celdaInicial(&celdInicLet,&celdInicNum,tablero);
-        celdaFinal(&celdFinLet,&celdFinNum, tablero);
+        celdaInicial(&celdInicLet,&celdInicNum);//,tablero);
+        celdaFinal(&celdFinLet,&celdFinNum);// tablero);
         cout<<"Esta seguro que desea mover su "<<tablero[c2i(celdInicLet)][c2i(celdInicNum)]<<" a "<<celdFinLet<<celdFinNum<<"? (s/n)"<<endl;
         cin>>verificador;
         while (verificador!='s'&&verificador!='n')
@@ -686,18 +680,18 @@ void moverPieza(string tablero[8][8])
             cin>>verificador;
         }
     }
-    if (movimientoPieza(c2i(celdInicLet),c2i(celdInicNum),c2i(celdFinLet),c2i(celdFinNum),tablero))
+    if (movimientoPieza(c2i(celdInicLet),c2i(celdInicNum),c2i(celdFinLet),c2i(celdFinNum)))//,tablero))
     {
         tablero[c2i(celdFinLet)][c2i(celdFinNum)]=tablero[c2i(celdInicLet)][c2i(celdInicNum)];
         tablero[c2i(celdInicLet)][c2i(celdInicNum)]="  ";
-        turno=turno*(-1);
+        //turno=turno*(-1);
     }
     else
         cout<<"Movimiento incorrecto"<<c2i(celdFinLet)<<c2i(celdFinNum)<<c2i(celdInicLet)<<c2i(celdInicNum)<<endl;
 
 }
 
-bool juegoTerminado(string tablero[8][8])
+bool juegoTerminado()//string tablero[8][8])
 {
     int i=0;
     for (int j=0;j<=7;j++)
@@ -717,7 +711,7 @@ bool juegoTerminado(string tablero[8][8])
     else
         return true;
 }
-int valorPieza(int x, int y, string tablero[8][8])
+int valorPieza(int x, int y)//, string tablero[8][8])
 {
     switch (tablero[x][y][0])
     {
@@ -754,8 +748,8 @@ int numAleatorio07()
     return (rand()%8);
 }
 
-
-void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
+/*
+void algoritmoShuperLoco()//string tablero[8][8])  // ACA EL ALGORITMOOOOOO
 {
 
 
@@ -774,9 +768,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='2'))
+                    if ((movimientoPieza(i,j,iDest,jDest))&&(tablero[i][j][1]=='2'))
                     {
-                        valorJugada1=valorPieza(iDest,jDest,tablero);
+                        valorJugada1=valorPieza(iDest,jDest);
                         contadorJugadasTotales++;
                         mejoresJugadas[contadorJugadasTotales-1]=valorJugada1;
                     }
@@ -792,9 +786,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='2'))
+                    if ((movimientoPieza(i,j,iDest,jDest))&&(tablero[i][j][1]=='2'))
                     {
-                        if (valorPieza(iDest,jDest,tablero)==
+                        if (valorPieza(iDest,jDest)==
                             valorMaxArray(mejoresJugadas,&contadorJugadasTotales))
                         {
                             mejorJugada1[0]=i;
@@ -819,10 +813,10 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&((i!=mejorJugada1[0])||(j!=mejorJugada1[1])||
+                    if ((movimientoPieza(i,j,iDest,jDest))&&((i!=mejorJugada1[0])||(j!=mejorJugada1[1])||
                                                                      (iDest!=mejorJugada1[2])||(jDest!=mejorJugada1[3]))&&(tablero[i][j][1]=='2'))
                     {
-                        valorJugada1=valorPieza(iDest,jDest,tablero);
+                        valorJugada1=valorPieza(iDest,jDest);
                         contadorJugadasTotales2++;
                         mejoresJugadas[contadorJugadasTotales2-1]=valorJugada1;
                     }
@@ -838,9 +832,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='2'))
+                    if ((movimientoPieza(i,j,iDest,jDest))&&(tablero[i][j][1]=='2'))
                     {
-                        if (valorPieza(iDest,jDest,tablero)==
+                        if (valorPieza(iDest,jDest)==
                             valorMaxArray(mejoresJugadas,&contadorJugadasTotales2))
                         {
                             sdaMejorJugada1[0]=i;
@@ -881,9 +875,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='1'))
+                    if ((movimientoPieza(i,j,iDest,jDest))&&(tablero[i][j][1]=='1'))
                     {
-                        valorJugada1Op=valorPieza(iDest,jDest,tablero);
+                        valorJugada1Op=valorPieza(iDest,jDest);
                         contadorJugadasTotalesOp++;
                         mejoresJugadasOp[contadorJugadasTotalesOp-1]=valorJugada1Op;
                     }
@@ -899,9 +893,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='1'))
+                    if ((movimientoPieza(i,j,iDest,jDest))&&(tablero[i][j][1]=='1'))
                     {
-                        if (valorPieza(iDest,jDest,tablero)==
+                        if (valorPieza(iDest,jDest)==
                             valorMaxArray(mejoresJugadasOp,&contadorJugadasTotalesOp))
                         {
                             mejorJugada1Op[0]=i;
@@ -930,9 +924,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if (movimientoPieza(i,j,iDest,jDest,tablero))
+                    if (movimientoPieza(i,j,iDest,jDest))
                     {
-                        valorJugada1Op=valorPieza(iDest,jDest,tablero);
+                        valorJugada1Op=valorPieza(iDest,jDest);
                         contadorJugadasTotalesOp2++;
                         mejoresJugadasOp[contadorJugadasTotalesOp2-1]=valorJugada1Op;
                     }
@@ -948,9 +942,9 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
             {
                 for (int jDest=0;jDest<=7;jDest++)
                 {
-                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='1'))
+                    if ((movimientoPieza(i,j,iDest,jDest))&&(tablero[i][j][1]=='1'))
                     {
-                        if (valorPieza(iDest,jDest,tablero)==
+                        if (valorPieza(iDest,jDest)==
                             valorMaxArray(mejoresJugadasOp,&contadorJugadasTotalesOp2))
                         {
                             mejorJugada1Op[0]=i;
@@ -999,7 +993,7 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
                 numAleatorio3=numAleatorio07();
                 numAleatorio4=numAleatorio07();
 
-                if (movimientoPieza(numAleatorio1,numAleatorio2,numAleatorio3,numAleatorio4,tablero))
+                if (movimientoPieza(numAleatorio1,numAleatorio2,numAleatorio3,numAleatorio4))
                 {
                     a=0;
                     tablero[numAleatorio1][numAleatorio2]=tablero[numAleatorio3][numAleatorio4];
@@ -1021,28 +1015,32 @@ void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
     }
     turno=turno*-1;
 }
-
+*/
 
 int main ()
 {
-    string tablero[8][8];  //definición de tablero
+    //string tablero[8][8];  //definición de tablero
 
-    iniciaTablero(tablero);
-    impTablero(tablero);
+    llenado_de_tablerop1();
+    llenado_de_tablerop2();
+    //iniciaTablero(tablero);
+    impTablero(/*tablero*/);
 
-    while (juegoTerminado(tablero)==false)
+    while (juegoTerminado(/*tablero*/)==false)
     {
-        if (turno==1)
+        if (turno%2==0)
         {
-            moverPieza(tablero);
-            impTablero(tablero);
+            moverPieza(/*tablero*/);
+            impTablero(/*tablero*/);
         }
-        if (turno==-1)
+        if (turno%2!=0)
         {
-            algoritmoShuperLoco(tablero);
-            impTablero(tablero);
-            turno=turno*-1;
+            //algoritmoShuperLoco(/*tablero*/);
+            moverPieza();
+            impTablero(/*tablero*/);
+            //turno=turno*-1;
         }
+        turno++;
     }
 
     int noTeCierres;
