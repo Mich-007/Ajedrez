@@ -1,820 +1,1051 @@
-//
-// Created by Fabio Villalobos on 10/9/2021.
-//
+#include <iostream>
+#include <string>
+#include <cstdlib>
 
-#include <vcl.h>
-#pragma hdrstop
+using namespace::std;
+int turno=1;
 
-#include "UntCuadro.h"
-#include "UntPrincipal.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
-#pragma resource "*.dfm"
-TFrmCuadro *FrmCuadro;
-TImage* Tablero[8][8];   //La imagen del la matriz de imagenes para el ajedrez
-//Es mejor que las imagenes de las piezas sean transparentes
-//Estas 3 matrices podrian haberse metido en una clase y luego seleccionar un dato
-char  MatrizTipo[8][8];  //Esto fue para saber el tipo de matriz si estaba Con pieza o no
-int Matrizcolor[8][8];   //Esto es para saber el color de la pieza
-int MatrizSeleccion[8][8]; //esto es para saber cual de todas las piezas esta seleccionada
-
-int blanco=1;
-int negro=2;
-int selec=1;
-int noselec=0;
-int nocolor=0;
-int turno=blanco;
-
-void fichas(int i, int j, int color, char tipo, int seleccion,TImage* nuevoimagen){
-    Tablero[i][j]=nuevoimagen;
-    MatrizTipo[i][j]=tipo;
-    Matrizcolor[i][j]= color;
-    MatrizSeleccion[i][j]=seleccion;
-    if( MatrizTipo[i][j]=='V')
-    {
-        Tablero[i][j]->Picture->LoadFromFile("fondotablero.jpg");  //carga los cuadros vacios
-        Tablero[i][j]->Visible=false;
-    }
-}
-void fichas2(int i, int j, int color, char tipo, int seleccion){
-
-    MatrizTipo[i][j]=tipo;
-    Matrizcolor[i][j]= color;
-    MatrizSeleccion[i][j]=seleccion;
-    if( MatrizTipo[i][j]=='V')
-    {
-        Tablero[i][j]->Picture->LoadFromFile("fondotablero.jpg");
-        Tablero[i][j]->Visible=false;
-    }
-}
-int  marcarPieza(int f, int c,int color)
+void impTablero(string tablero[8][8])
 {
-    if(f>-1&&f<8&&c>-1&&c<8)
+    int cont=0;
+    cout<<"\311";
+    while (cont<7)
     {
-        if(color!=Matrizcolor[f][c])
+        for (int i=1;i<=4;i++)    // dibujando límite superior
         {
-            if('V'==MatrizTipo[f][c])
+            if (i%4!=0)
             {
-                Tablero[f][c]->Visible=true;
+                cout<<"\315";
+            }
+            else
+            {
+                cout<<"\313";
+                cont++;
+            }
+            if (cont==7)
+            {
+                cout<<"\315\315\315\273"<<endl;
+            }
+        }
+    }
+    for (int j=7;j>=0;j--)
+    {
+        for (int i=0;i<8;i++)
+        {
+            cout<<"\272"<<tablero[i][j]<<" ";   //imprimiendo tablero
+            if (i==7)
+            {
+                cout<<"\272 "<<(j+1);
 
             }
-            MatrizSeleccion [f][c]=3;
-            if('V'!=MatrizTipo[f][c])
-            {
-                return 0;
-            }
-            return 1;
         }
-
-    }
-    return 0;
-
-}
-int  ValidarPieza(int f, int c,int color)
-{
-    if(f>-1&&f<8&&c>-1&&c<8)
-    {
-        if(color!=Matrizcolor[f][c])
+        cout<<endl;
+        if (j!=0)
         {
-            return 1;
-        }
-
-    }
-    return 0;
-
-}
-
-
-int  marcarPieza_peon(int f, int c,int color)
-{
-    if(f>-1&&f<8&&c>-1&&c<8)
-    {
-        if(color!=Matrizcolor[f][c])
-        {
-            if('V'==MatrizTipo[f][c])
+            cout<<"\314";
+            cont=0;
+            while (cont<=7)
             {
-                Tablero[f][c]->Visible=true;
-
-            }
-            MatrizSeleccion [f][c]=4;
-            return 1;
-        }
-
-    }
-    return 0;
-
-}
-//los movimientos del caballo que es posible que haga
-void marcarCaballo(int f,int c,int color)
-{
-    marcarPieza( f-2,  c-1,color);
-    marcarPieza( f-1,  c-2,color);
-
-    marcarPieza( f+1,  c+1,color);
-    marcarPieza( f+2,  c+2,color);
-
-    marcarPieza( f-2,  c+1,color);
-    marcarPieza( f-1,  c+2,color);
-
-    marcarPieza( f+1,  c-2,color);
-    marcarPieza( f+2,  c-1,color);
-
-}
-//la torre son 4 for por las lineas rectas
-void marcartorre(int f,int c,int color)
-{
-    //Arriba y abajo
-    for(int i=f-1; i>=0;i--)
-    {
-        if(1!=marcarPieza(i,  c,color))
-        {i=0;}
-    }
-    for(int i=f+1; i<8;i++)
-    {
-        if(1!=marcarPieza(i,  c,color))
-        {i=8;}
-    }
-    //Izquierda y derecha   i es igual a j
-    for(int i=c-1; i>=0;i--)
-    {
-        if(1!=marcarPieza(f,  i,color))
-        {i=0;}
-    }
-    for(int i=c+1; i<8;i++)
-    {
-        if(1!=marcarPieza(f,  i,color))
-        {i=8;}
-    }
-
-}
-//el alfil son diagonales
-void marcarAlfil(int f,int c,int color)
-{
-
-    //Arriba y abajo
-    int j=c-1;
-    for(int i=f-1; i>=0;i--,j--)
-    {
-        if(1!=marcarPieza(i,j,color))
-        {i=0;}
-    }
-    j=c+1;
-    for(int i=f+1; i<8;i++,j++)
-    {
-        if(1!=marcarPieza(i, j,color))
-        {i=8;}
-    }
-    //Izquierda y derecha
-    j=c+1;
-    for(int i=f-1; i>=0;i--,j++)
-    {
-        if(1!=marcarPieza(i,  j,color))
-        {i=0;}
-    }
-    j=c-1;
-    for(int i=f+1; i<8;i++,j--)
-    {
-        if(1!=marcarPieza(i,  j,color))
-        {i=8;}
-    }
-
-
-
-}
-//la dama es una torre con un alfil
-void marcarDama(int f,int c,int color)
-{
-    marcartorre(f,c,color);
-    marcarAlfil(f,c,color);
-}
-//el pion lleva condiciones especiales
-void marcar_pion_mueve(int f,int c,int color)
-{          if(color==negro)
-    {marcarPieza_peon(f+1,  c,color);
-        if( MatrizTipo[f+1][ c-1]!='V')  marcarPieza(f+1,  c-1,color);
-        if( MatrizTipo[f+1][  c+1]!='V')        marcarPieza(f+1,  c+1,color);
-        if(f==1)
-        {marcarPieza_peon(f+2, c,color);
-        }
-    }
-    if(color==blanco)
-    {marcarPieza_peon(f-1,  c,color);
-
-        if( MatrizTipo[f-1][ c-1]!='V')  marcarPieza(f-1,  c-1,color);
-        if( MatrizTipo[f-1][  c+1]!='V')    marcarPieza(f-1,  c+1,color);
-        if(f==6)
-        { marcarPieza_peon(f-2,  c,color);
-        }}
-}
-//al rey le faltan las condiciones de jake y retriciones
-void marcarRey(int f,int c,int color)
-{
-    for (int i = f-1; i < f+2; i++) {
-        for (int j = c-1; j < c+2; j++) {
-            if(i!=f&&c!=j)
-                marcarPieza(i,  j,color);
-
-        }}
-
-}
-//Aqui se llene el cuadro
-__fastcall TFrmCuadro::TFrmCuadro(TComponent* Owner)
-        : TForm(Owner)
-{
-//negras
-    fichas(0,0,negro,'T',noselec,this->TorreNegraB);
-    fichas(0,1,negro,'C',noselec,this->CaballoNegroN);
-    fichas(0,2,negro,'A',noselec,this->AlfilNegroB);
-    fichas(0,3,negro,'D',noselec,this->DamaNegraN);
-    fichas(0,4,negro,'R',noselec,this->ReyNegroB);
-    fichas(0,5,negro,'A',noselec,this->AlfilNegroN);
-    fichas(0,6,negro,'C',noselec,this->CaballoNegroB);
-    fichas(0,7,negro,'T',noselec,this->TorreNegraN);
-
-    fichas(1,0,negro,'P',noselec,this->PeonNegroN1);
-    fichas(1,1,negro,'P',noselec,this->PeonNegroB1);
-    fichas(1,2,negro,'P',noselec,this->PeonNegroN2);
-    fichas(1,3,negro,'P',noselec,this->PeonNegroB2);
-    fichas(1,4,negro,'P',noselec,this->PeonNegroN3);
-    fichas(1,5,negro,'P',noselec,this->PeonNegroB3);
-    fichas(1,6,negro,'P',noselec,this->PeonNegroN4);
-    fichas(1,7,negro,'P',noselec,this->PeonNegroB4);
-
-    //blancas
-
-    fichas(7,0,blanco,'T',noselec,this->TorreBlancaN);
-    fichas(7,1,blanco,'C',noselec,this->CaballoBlancoB);
-    fichas(7,2,blanco,'A',noselec,this->AlfilBlancoN);
-    fichas(7,3,blanco,'D',noselec,this->DamaBlancaB);
-    fichas(7,4,blanco,'R',noselec,this->ReyBlancoN);
-    fichas(7,5,blanco,'A',noselec,this->AlfilBlancoB);
-    fichas(7,6,blanco,'C',noselec,this->CaballoBlancoN);
-    fichas(7,7,blanco,'T',noselec,this->TorreBlancaB);
-
-    fichas(6,0,blanco,'P',noselec,this->PeonBlancoB1);
-    fichas(6,1,blanco,'P',noselec,this->PeonBlancoN1);
-    fichas(6,2,blanco,'P',noselec,this->PeonBlancoB2);
-    fichas(6,3,blanco,'P',noselec,this->PeonBlancoN2);
-    fichas(6,4,blanco,'P',noselec,this->PeonBlancoB3);
-    fichas(6,5,blanco,'P',noselec,this->PeonBlancoN3);
-    fichas(6,6,blanco,'P',noselec,this->PeonBlancoB4);
-    fichas(6,7,blanco,'P',noselec,this->PeonBlancoN4);
-
-    //vacíos
-
-    fichas(2,0,nocolor,'V',noselec,this->VacioB1);
-    fichas(2,1,nocolor,'V',noselec,this->VacioN1);
-    fichas(2,2,nocolor,'V',noselec,this->VacioB2);
-    fichas(2,3,nocolor,'V',noselec,this->VacioN2);
-    fichas(2,4,nocolor,'V',noselec,this->VacioB3);
-    fichas(2,5,nocolor,'V',noselec,this->VacioN3);
-    fichas(2,6,nocolor,'V',noselec,this->VacioB4);
-    fichas(2,7,nocolor,'V',noselec,this->VacioN4);
-
-    fichas(3,0,nocolor,'V',noselec,this->VacioN5);
-    fichas(3,1,nocolor,'V',noselec,this->VacioB5);
-    fichas(3,2,nocolor,'V',noselec,this->VacioN6);
-    fichas(3,3,nocolor,'V',noselec,this->VacioB6);
-    fichas(3,4,nocolor,'V',noselec,this->VacioN7);
-    fichas(3,5,nocolor,'V',noselec,this->VacioB7);
-    fichas(3,6,nocolor,'V',noselec,this->VacioN8);
-    fichas(3,7,nocolor,'V',noselec,this->VacioB8);
-
-    fichas(4,0,nocolor,'V',noselec,this->VacioB9);
-    fichas(4,1,nocolor,'V',noselec,this->VacioN9);
-    fichas(4,2,nocolor,'V',noselec,this->VacioB10);
-    fichas(4,3,nocolor,'V',noselec,this->VacioN10);
-    fichas(4,4,nocolor,'V',noselec,this->VacioB11);
-    fichas(4,5,nocolor,'V',noselec,this->VacioN11);
-    fichas(4,6,nocolor,'V',noselec,this->VacioB12);
-    fichas(4,7,nocolor,'V',noselec,this->VacioN12);
-
-    fichas(5,0,nocolor,'V',noselec,this->VacioN13);
-    fichas(5,1,nocolor,'V',noselec,this->VacioB13);
-    fichas(5,2,nocolor,'V',noselec,this->VacioN14);
-    fichas(5,3,nocolor,'V',noselec,this->VacioB14);
-    fichas(5,4,nocolor,'V',noselec,this->VacioN15);
-    fichas(5,5,nocolor,'V',noselec,this->VacioB15);
-    fichas(5,6,nocolor,'V',noselec,this->VacioN16);
-    fichas(5,7,nocolor,'V',noselec,this->VacioB16);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::SBTSalirClick(TObject *Sender)
-{
-    Close();
-}
-//---------------------------------------------------------------------------
-int  seleccion()
-{ for (int i = 0; i < 8; i++) {
-        for (int j =0; j < 8; j++) {
-            if( MatrizSeleccion[i][j]==selec)
-            {
-                return 1;
-            }
-
-        }
-    }
-    return 0;
-}
-//para saber que toco
-void pregunta(int i, int j,int color)
-{
-    if( MatrizTipo[i][j]=='P')
-    {
-        marcar_pion_mueve(i,j,color);
-    }
-    if( MatrizTipo[i][j]=='T')
-    {
-        marcartorre(i,j,color);
-    }
-    if( MatrizTipo[i][j]=='C')
-    {
-        marcarCaballo(i,j,color);
-    }
-    if( MatrizTipo[i][j]=='A')
-    {
-        marcarAlfil(i,j,color);
-    }
-    if( MatrizTipo[i][j]=='D')
-    {
-        marcarDama(i,j,color);
-    }
-    if( MatrizTipo[i][j]=='R')
-    {
-        marcarRey(i,j,color);
-    }
-
-}
-//lleva los turnos de los jugadores.
-void piezatipo(int i, int j){
-
-
-
-    if( seleccion()==1)
-    {
-        int j_origianl =0;
-        int i_origianl=0;
-        for (int ie = 0; ie < 8; ie++) {
-            for (int je =0; je < 8; je++) {
-                if(       MatrizSeleccion[ie][je]==1)
-                {          j_origianl=je;
-                    i_origianl=ie; }
-            }}
-
-        if(       MatrizSeleccion[i][j]==3)
-        {
-
-            Tablero[i][j]->Picture=Tablero[i_origianl][j_origianl]->Picture;
-            fichas2(i,j,Matrizcolor[i_origianl][j_origianl],MatrizTipo[i_origianl][j_origianl],noselec);
-            fichas2(i_origianl,j_origianl,nocolor,'V',noselec);
-
-
-
-            if(turno==   blanco)
-            {              turno=negro;     }else
-            { turno=blanco;}
-
-        }else
-        {                          if(       MatrizSeleccion[i][j]==4)
-            {
-                if( MatrizTipo[i][j]=='V')
+                for (int k=1;k<=4;k++)
                 {
-                    Tablero[i][j]->Picture=Tablero[i_origianl][j_origianl]->Picture;
-                    fichas2(i,j,Matrizcolor[i_origianl][j_origianl],MatrizTipo[i_origianl][j_origianl],noselec);
-                    fichas2(i_origianl,j_origianl,nocolor,'V',noselec);
-                    if(turno==  blanco)
-                    {              turno=negro;     }else
-                    { turno=blanco;}
+                    if (k%4!=0)
+                    {
+                        cout<<"\315"; //dibujando rayas entre cuadrantes
+                    }
+                    else
+                    {
+                        cout<<"\316";
+                        cont++;
+                    }
+
                 }
+                if (cont==7)
+                {
+                    cout<<"\315\315\315\271"<<endl;
+                    cont++;
+                }
+            }
 
-
+        }
+    }
+    cout<<"\310";
+    cont=0;
+    while (cont<7)
+    {
+        for (int i=1;i<=4;i++)    // dibujando límite inferior
+        {
+            if (i%4!=0)
+            {
+                cout<<"\315";
+            }
+            else
+            {
+                cout<<"\312";
+                cont++;
+            }
+            if (cont==7)
+            {
+                cout<<"\315\315\315\274"<<endl;
             }
         }
-        for (int ie = 0; ie < 8; ie++) {
-            for (int je =0; je < 8; je++) {
+    }
+    for(int i=65;i<(65+8);i++)
+    {
+        printf("  %c ",i);
+        if (i==(65+7))
+        {
+            cout<<"\n\n";
+            cout<<"***********************************\n\n";
 
-                MatrizSeleccion[ie][je]=0;
-                if( MatrizTipo[ie][je]=='V')
+        }
+    }
+}
+
+void iniciaTablero(string tablero[8][8])
+{
+    for (int i=0;i<8;i++)
+    {
+        tablero[i][1]="p1";   //ubicación de peones
+        tablero[i][6]="p2";
+    }
+
+    tablero[0][0]="t1";
+    tablero[1][0]="c1";    //ubicación otras piezas jugador 1
+    tablero[2][0]="a1";
+    tablero[3][0]="q1";
+    tablero[4][0]="k1";
+    for (int i=5;i<8;i++)
+    {
+        tablero[i][0]=tablero[7-i][0];
+    }
+    tablero[0][7]="t2";
+    tablero[1][7]="c2";
+    tablero[2][7]="a2";
+    tablero[3][7]="k2";    //ubicación otras piezas jugador 2
+    tablero[4][7]="q2";
+
+    for (int i=5;i<8;i++)
+    {
+        tablero[i][7]=tablero[7-i][7];
+    }
+
+    for (int i=0;i<8;i++)
+    {
+        for (int j=0;j<8;j++)
+        {
+            if (tablero[i][j]=="\0")    //Dibujando espacitos vacíos
+            {
+                tablero[i][j]="  ";
+            }
+        }
+    }
+}
+
+bool movimientoPieza (int xinic,int yinic,int xfin, int yfin, string tablero[8][8])
+{
+    bool saltoPieza=false;
+    int a;
+    if ((xinic==xfin)&&(yinic==yfin))
+    {
+        return false;
+    }
+    if (tablero[xinic][yinic]=="p1")
+    {
+        a=0;
+        if (xinic==xfin)
+        {
+            if (((yinic+1==yfin)||(yinic-1==yfin))
+                &&(tablero[xinic][yfin][1]!='2'))
+            {
+                a++;
+            }
+            if (((yinic+2==yfin)&&(xinic==xfin))
+                &&(yinic=1)
+                &&(tablero[xinic][yfin][1]!='2')&&(tablero[xinic][yinic+1]=="  "))
+            {
+                a++;
+            }
+            if (a>0)
+            {
+                if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
                 {
-                    Tablero[ie][je]->Visible=false;
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        if (((xinic+1==xfin)||(xinic-1==xfin))&&(yinic=yfin-1)&&(tablero[xfin][yfin][1]=='2'))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+    if (tablero[xinic][yinic]=="p2")
+    {
+        a=0;
+        if (xinic==xfin)
+        {
+            if (((yinic+1==yfin)||(yinic-1==yfin))
+                &&(tablero[xinic][yfin][1]!='1'))
+            {
+                a++;
+            }
+            if (((yinic-2==yfin)&&(xinic==xfin))
+                &&(yinic=6)
+                &&(tablero[xinic][yfin][1]!='1')&&(tablero[xinic][yinic-1]=="  "))
+            {
+                a++;
+            }
+            if (a>0)
+            {
+                if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        if (((xinic+1==xfin)||(xinic-1==xfin))&&(yinic=yfin+1)&&(tablero[xfin][yfin][1]=='1'))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    if ((tablero[xinic][yinic]=="t1")||(tablero[xinic][yinic]=="t2"))
+    {
+        saltoPieza=false;
+        if ((xinic==xfin)||(yinic==yfin))
+            if (xinic==xfin)
+            {
+                if (yfin>yinic+1)
+                {
+                    for (int i=yinic+1;i<=yfin-1;i++)
+                    {
+                        if (tablero[xinic][i]!="  ")
+                        {
+                            saltoPieza=true;
+                        }
+                    }
+                }
+                if (yfin<yinic-1)
+                {
+                    for (int i=yinic-1;i>=yfin+1;i--)
+                    {
+                        if (tablero[xinic][i]!="  ")
+                        {
+                            saltoPieza=true;
+                        }
+                    }
+                }
+            }
+        if (yinic==yfin)
+        {
+            if (xfin>xinic+1)
+            {
+                for (int i=xinic+1;i<=xfin-1;i++)
+                {
+                    if (tablero[i][yinic]!="  ")
+                    {
+                        saltoPieza=true;
+                    }
+                }
+            }
+            if (xfin<xinic)
+            {
+                for (int i=xinic-1;i>=xfin+1;i--)
+                {
+                    if (tablero[i][yinic]!="  ")
+                    {
+                        saltoPieza=true;
+                    }
                 }
             }
         }
+        if (saltoPieza==false)
+        {
+            if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
 
+    if ((tablero[xinic][yinic]=="a1")||(tablero[xinic][yinic]=="a2"))
+    {
+        saltoPieza=false;
+        if (abs((xfin-xinic))==abs((yinic-yfin)))
+        {
+            if ((xfin-xinic-1>0)&&(yfin-yinic-1>0))
+            {
+                for (int i=1;i<=(xfin-xinic)-1;i++)
+                {
+                    if ((tablero[xinic+i][yinic+i]!="  ")&&(tablero[xinic+i][yinic+i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if ((xfin-xinic+1<0)&&(yfin-yinic-1>0))
+            {
+                for (int i=1;i<=(-xfin+xinic)-1;i++)
+                {
+                    if ((tablero[xinic-i][yinic+i]!="  ")&&(tablero[xinic-i][yinic+i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if ((xfin-xinic+1<0)&&(yfin-yinic+1<0))
+            {
+                for (int i=1;i<=(-xfin+xinic)-1;i++)
+                {
+                    if ((tablero[xinic-i][yinic-i]!="  ")&&(tablero[xinic-i][yinic-i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if ((xfin-xinic-1>0)&&(yfin-yinic+1<0))
+            {
+                for (int i=1;i<=(+xfin-xinic)-1;i++)
+                {
+                    if ((tablero[xinic+i][yinic-i]!="  ")&&(tablero[xinic+i][yinic-i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if (saltoPieza==true)
+            {
+                return false;
+            }
+            else
+            {
+                if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if ((tablero[xinic][yinic]=="q1")||(tablero[xinic][yinic]=="q2"))
+    {
+        saltoPieza=false;
+        if ((xfin-xinic)==(yinic-yfin)||(xinic==xfin)||(yinic==yfin))
+        {
+            if ((xfin-xinic-1>0)&&(yfin-yinic-1>0))
+            {
+                for (int i=1;i<=(xfin-xinic)-1;i++)
+                {
+                    if ((tablero[xinic+i][yinic+i]!="  ")&&(tablero[xinic+i][yinic+i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if ((xfin-xinic+1<0)&&(yfin-yinic-1>0))
+            {
+                for (int i=1;i<=(-xfin+xinic)-1;i++)
+                {
+                    if ((tablero[xinic-i][yinic+i]!="  ")&&(tablero[xinic-i][yinic+i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if ((xfin-xinic+1<0)&&(yfin-yinic+1<0))
+            {
+                for (int i=1;i<=(-xfin+xinic)-1;i++)
+                {
+                    if ((tablero[xinic-i][yinic-i]!="  ")&&(tablero[xinic-i][yinic-i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+            if ((xfin-xinic-1>0)&&(yfin-yinic+1<0))
+            {
+                for (int i=1;i<=(+xfin-xinic)-1;i++)
+                {
+                    if ((tablero[xinic+i][yinic-i]!="  ")&&(tablero[xinic+i][yinic-i]!=tablero[xinic][yinic]))
+                    {
+                        saltoPieza=true;
+                    }
+                }
+
+            }
+
+            if (xinic==xfin)
+            {
+                if (yfin>yinic+1)
+                {
+                    for (int i=yinic+1;i<=yfin-1;i++)
+                    {
+                        if (tablero[xinic][i]!="  ")
+                        {
+                            saltoPieza=true;
+                        }
+                    }
+                }
+                if (yfin<yinic-1)
+                {
+                    for (int i=yinic-1;i>=yfin+1;i--)
+                    {
+                        if (tablero[xinic][i]!="  ")
+                        {
+                            saltoPieza=true;
+                        }
+                    }
+                }
+            }
+            if (yinic==yfin)
+            {
+                if (xfin>xinic+1)
+                {
+                    for (int i=xinic+1;i<=xfin-1;i++)
+                    {
+                        if (tablero[i][yinic]!="  ")
+                        {
+                            saltoPieza=true;
+                        }
+                    }
+                }
+                if (xfin<xinic)
+                {
+                    for (int i=xinic-1;i>=xfin+1;i--)
+                    {
+                        if (tablero[i][yinic]!="  ")
+                        {
+                            saltoPieza=true;
+                        }
+                    }
+                }
+            }
+
+            if (saltoPieza=true)
+            {
+                return false;
+            }
+            else
+            {
+                if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if ((tablero[xinic][yinic]=="k1")||(tablero[xinic][yinic]=="k2"))
+    {
+        if ((abs(xfin-xinic)==1)||(abs((yinic-yfin))==1))
+        {
+            if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
+            {
+                return true;
+            }
+        }
+        else
+            return false;
+    }
+    if ((tablero[xinic][yinic]=="c1")||(tablero[xinic][yinic]=="c2"))
+    {
+        if (((abs(xfin-xinic)==2)&&(abs(yinic-yfin)==1))||((abs(xfin-xinic)==1)&&(abs(yinic-yfin)==2)))
+        {
+            if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+int c2i (char a)
+{
+    switch (a)
+    {
+        case '1':
+            return 0;
+            break;
+        case '2':
+            return 1;
+            break;
+        case '3':
+            return 2;
+            break;
+        case '4':
+            return 3;
+            break;
+        case '5':
+            return 4;
+            break;
+        case '6':
+            return 5;
+            break;
+        case '7':
+            return 6;
+            break;
+        case '8':
+            return 7;
+            break;
+        case 'A':
+            return 0;
+            break;
+        case 'B':
+            return 1;
+            break;
+        case 'C':
+            return 2;
+            break;
+        case 'D':
+            return 3;
+            break;
+        case 'E':
+            return 4;
+            break;
+        case 'F':
+            return 5;
+            break;
+        case 'G':
+            return 6;
+            break;
+        case 'a':
+            return 0;
+            break;
+        case 'b':
+            return 1;
+            break;
+        case 'c':
+            return 2;
+            break;
+        case 'd':
+            return 3;
+            break;
+        case 'e':
+            return 4;
+            break;
+        case 'f':
+            return 5;
+            break;
+        case 'g':
+            return 6;
+            break;
+        case 'h':
+            return 7;
+            break;
+
+        case 'H':
+            return 7;
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+void celdaInicial (char *celdInicLet, char *celdInicNum, string tablero[8][8])
+{
+    bool turnoCorrecto=false;
+    while (turnoCorrecto==false)
+    {
+        cout<<"Ingrese letra de celda a mover"<<endl;
+        cin>>*celdInicLet;
+        while (*celdInicLet != 'A'&&*celdInicLet != 'B'&&*celdInicLet != 'C'&&*celdInicLet != 'D'&&*celdInicLet != 'E'&&
+               *celdInicLet != 'F'&&*celdInicLet != 'G'&&*celdInicLet != 'H'&&*celdInicLet != 'a'&&*celdInicLet != 'b'&&*celdInicLet != 'c'&&
+               *celdInicLet != 'd'&&*celdInicLet != 'e'&&*celdInicLet != 'f'&&*celdInicLet != 'g'&&*celdInicLet != 'h')
+        {
+            cout<<"La celda ingresada no es valida, ingrese letra de celda entre A y H"<<endl;
+            cin>>*celdInicLet;
+        }
+        cout<<"Ingrese numero de celda para mover pieza (1-8)"<<endl;
+        cin>>*celdInicNum;
+        while (*celdInicNum != '1'&&*celdInicNum != '2'&&*celdInicNum != '3'&&*celdInicNum != '4'&&*celdInicNum != '5'&&
+               *celdInicNum != '6'&&*celdInicNum != '7'&&*celdInicNum != '8')
+        {
+            cout<<"La celda ingresada no es valida, ingrese un numero entre 1 y 8"<<endl;
+            cin>>*celdInicNum;
+        }
+        if (((tablero[c2i(*celdInicLet)][c2i(*celdInicNum)][1]=='1')&&(turno==1))
+            ||((tablero[c2i(*celdInicLet)][c2i(*celdInicNum)][1]=='2')&&(turno==(-1))))
+        {
+            turnoCorrecto=true;
+        }
+        else
+        {
+            turnoCorrecto=false;
+        }
+        if (turnoCorrecto==true)
+        {
+            cout<<"Ok, la celda de la pieza a mover sera: "<<*celdInicLet<<*celdInicNum<<endl;
+            cout<<"La coordenada especificada ("<<*celdInicLet<<*celdInicNum<<") tiene la pieza "
+                <<tablero[c2i(*celdInicLet)][c2i(*celdInicNum)]<<endl;
+
+        }
+        else
+        {
+            cout<<"La celda seleccionada no contiene una pieza suya"<<endl;
+        }
+    }
+}
+
+void celdaFinal (char *celdFinLet, char *celdFinNum, string tablero[8][8])
+{
+    bool turnoCorrecto=false;
+
+    while (turnoCorrecto==false)
+    {
+        cout<<"Ingrese letra de celda destino"<<endl;
+        cin>>*celdFinLet;
+
+        while (*celdFinLet != 'A'&&*celdFinLet != 'B'&&*celdFinLet != 'C'&&*celdFinLet != 'D'&&*celdFinLet != 'E'&&
+               *celdFinLet != 'F'&&*celdFinLet != 'G'&&*celdFinLet != 'H'&&*celdFinLet != 'a'&&*celdFinLet != 'b'&&*celdFinLet != 'c'&&
+               *celdFinLet != 'd'&&*celdFinLet != 'e'&&*celdFinLet != 'f'&&*celdFinLet != 'g'&&*celdFinLet != 'h')
+        {
+            cout<<"La celda ingresada no es valida, ingrese letra de celda entre A y H"<<endl;
+            cin>>*celdFinLet;
+        }
+        cout<<"Ingrese numero de celda destino (1-8)"<<endl;
+        cin>>*celdFinNum;
+        while (*celdFinNum != '1'&&*celdFinNum != '2'&&*celdFinNum != '3'&&*celdFinNum != '4'&&*celdFinNum != '5'&&
+               *celdFinNum != '6'&&*celdFinNum != '7'&&*celdFinNum != '8')
+        {
+            cout<<"La celda ingresada no es valida, ingrese un numero entre 1 y 8"<<endl;
+            cin>>*celdFinNum;
+        }
+        if (((tablero[c2i(*celdFinLet)][c2i(*celdFinNum)][1]=='1')&&(turno==1))
+            ||((tablero[c2i(*celdFinLet)][c2i(*celdFinNum)][1]=='2')&&(turno==(-1))))
+        {
+            turnoCorrecto=false;
+            cout<<"No puedes comerte piezas aliadas"<<endl;
+        }
+        else
+        {
+            turnoCorrecto=true;
+        }
+        if (turnoCorrecto==true)
+        {
+            cout<<"Ok, la celda destino sera: "<<*celdFinLet<<*celdFinNum<<endl;
+        }
+    }
+}
+
+void moverPieza(string tablero[8][8])
+{
+    char celdInicLet='z';
+    char celdInicNum='z';
+    char celdFinLet='z';
+    char celdFinNum='z';
+    char verificador='z';
+
+    while (verificador!='s')
+    {
+        celdaInicial(&celdInicLet,&celdInicNum,tablero);
+        celdaFinal(&celdFinLet,&celdFinNum, tablero);
+        cout<<"Esta seguro que desea mover su "<<tablero[c2i(celdInicLet)][c2i(celdInicNum)]<<" a "<<celdFinLet<<celdFinNum<<"? (s/n)"<<endl;
+        cin>>verificador;
+        while (verificador!='s'&&verificador!='n')
+        {
+            cout<<"Ingrese opcion correcta"<<endl;
+            cin>>verificador;
+        }
+    }
+    if (movimientoPieza(c2i(celdInicLet),c2i(celdInicNum),c2i(celdFinLet),c2i(celdFinNum),tablero))
+    {
+        tablero[c2i(celdFinLet)][c2i(celdFinNum)]=tablero[c2i(celdInicLet)][c2i(celdInicNum)];
+        tablero[c2i(celdInicLet)][c2i(celdInicNum)]="  ";
+        turno=turno*(-1);
+    }
+    else
+        cout<<"Movimiento incorrecto"<<c2i(celdFinLet)<<c2i(celdFinNum)<<c2i(celdInicLet)<<c2i(celdInicNum)<<endl;
+
+}
+
+bool juegoTerminado(string tablero[8][8])
+{
+    int i=0;
+    for (int j=0;j<=7;j++)
+    {
+        for (int k=0;k<=7;k++)
+        {
+            if ((tablero[j][k]=="k1")||(tablero[j][k]=="k2"))
+            {
+                i++;
+            }
+        }
+    }
+    if (i==2)
+    {
+        return false;
+    }
+    else
+        return true;
+}
+int valorPieza(int x, int y, string tablero[8][8])
+{
+    switch (tablero[x][y][0])
+    {
+        case 'p': return 1;
+            break;
+        case 't': return 5;
+            break;
+        case 'c': return 4;
+            break;
+        case 'a': return 4;
+            break;
+        case 'q': return 12;
+            break;
+        case 'k': return 1000;
+            break;
+        case ' ': return 0;
+            break;
+    }
+}
+int valorMaxArray(int arreglo[40],int* cantJugadas)
+{
+    int max=arreglo[0];
+    for (int i=1;i<=*cantJugadas;i++)
+    {
+        if (max<arreglo[i])
+        {
+            max=arreglo[i];
+        }
+    }
+    return max;
+}
+int numAleatorio07()
+{
+    return (rand()%8);
+}
+
+
+void algoritmoShuperLoco(string tablero[8][8])  // ACA EL ALGORITMOOOOOO
+{
+
+
+    int valorJugada1;
+    int mejoresJugadas[40];
+    int contadorJugadasTotales=0;
+    int mejorJugada1[4];
+    int sdaMejorJugada1[4];
+    int valorSegundaMejorJugada;
+    int contadorJugadasTotales2=0;
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='2'))
+                    {
+                        valorJugada1=valorPieza(iDest,jDest,tablero);
+                        contadorJugadasTotales++;
+                        mejoresJugadas[contadorJugadasTotales-1]=valorJugada1;
+                    }
+                }
+            }
+        }
+    }
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='2'))
+                    {
+                        if (valorPieza(iDest,jDest,tablero)==
+                            valorMaxArray(mejoresJugadas,&contadorJugadasTotales))
+                        {
+                            mejorJugada1[0]=i;
+                            mejorJugada1[1]=j;
+                            mejorJugada1[2]=iDest;
+                            mejorJugada1[3]=jDest;
+                        }
+
+
+                    }
+                }
+            }
+        }
+    }
+
+
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&((i!=mejorJugada1[0])||(j!=mejorJugada1[1])||
+                                                                     (iDest!=mejorJugada1[2])||(jDest!=mejorJugada1[3]))&&(tablero[i][j][1]=='2'))
+                    {
+                        valorJugada1=valorPieza(iDest,jDest,tablero);
+                        contadorJugadasTotales2++;
+                        mejoresJugadas[contadorJugadasTotales2-1]=valorJugada1;
+                    }
+                }
+            }
+        }
+    }
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='2'))
+                    {
+                        if (valorPieza(iDest,jDest,tablero)==
+                            valorMaxArray(mejoresJugadas,&contadorJugadasTotales2))
+                        {
+                            sdaMejorJugada1[0]=i;
+                            sdaMejorJugada1[1]=j;
+                            sdaMejorJugada1[2]=iDest;
+                            sdaMejorJugada1[3]=jDest;
+                            valorSegundaMejorJugada=valorMaxArray(mejoresJugadas,&contadorJugadasTotales2);
+                        }
+
+
+                    }
+                }
+            }
+        }
+    }
+    //Ver cuanto se pierde si el oponente hace la mejor jugada posible con cada jugada
+    //Caso 1: Hacer la mejor jugada posible (la que come la pieza de mayor puntaje)
+
+    int valorJugada1Op;
+    int mejoresJugadasOp[40];
+    int contadorJugadasTotalesOp=0;
+    int contadorJugadasTotalesOp2=0;
+    int mejorJugada1Op[4];
+    int valorJugadaTotal1;
+    int valorJugadaTotal2;
+    string loQueHabiaFin, loQueHabiaInic;
+    turno=turno*-1;
+    loQueHabiaFin=tablero[mejorJugada1[2]][mejorJugada1[3]];
+    loQueHabiaInic=tablero[mejorJugada1[0]][mejorJugada1[1]];
+
+    tablero[mejorJugada1[2]][mejorJugada1[3]]=tablero[mejorJugada1[0]][mejorJugada1[1]];
+    tablero[mejorJugada1[0]][mejorJugada1[1]]="  ";
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='1'))
+                    {
+                        valorJugada1Op=valorPieza(iDest,jDest,tablero);
+                        contadorJugadasTotalesOp++;
+                        mejoresJugadasOp[contadorJugadasTotalesOp-1]=valorJugada1Op;
+                    }
+                }
+            }
+        }
+    }
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='1'))
+                    {
+                        if (valorPieza(iDest,jDest,tablero)==
+                            valorMaxArray(mejoresJugadasOp,&contadorJugadasTotalesOp))
+                        {
+                            mejorJugada1Op[0]=i;
+                            mejorJugada1Op[1]=j;
+                            mejorJugada1Op[2]=iDest;
+                            mejorJugada1Op[3]=jDest;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    valorJugadaTotal1=valorMaxArray(mejoresJugadas,&contadorJugadasTotales)
+                      -valorMaxArray(mejoresJugadasOp,&contadorJugadasTotalesOp);
+
+    tablero[mejorJugada1[2]][mejorJugada1[3]]=loQueHabiaFin;
+    tablero[mejorJugada1[0]][mejorJugada1[1]]=loQueHabiaInic;
+    tablero[sdaMejorJugada1[2]][sdaMejorJugada1[3]]=tablero[sdaMejorJugada1[0]][sdaMejorJugada1[1]];
+    tablero[sdaMejorJugada1[0]][sdaMejorJugada1[1]]="  ";
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if (movimientoPieza(i,j,iDest,jDest,tablero))
+                    {
+                        valorJugada1Op=valorPieza(iDest,jDest,tablero);
+                        contadorJugadasTotalesOp2++;
+                        mejoresJugadasOp[contadorJugadasTotalesOp2-1]=valorJugada1Op;
+                    }
+                }
+            }
+        }
+    }
+    for (int i=0;i<=7;i++)
+    {
+        for (int j=0;j<=7;j++)
+        {
+            for (int iDest=0;iDest<=7;iDest++)
+            {
+                for (int jDest=0;jDest<=7;jDest++)
+                {
+                    if ((movimientoPieza(i,j,iDest,jDest,tablero))&&(tablero[i][j][1]=='1'))
+                    {
+                        if (valorPieza(iDest,jDest,tablero)==
+                            valorMaxArray(mejoresJugadasOp,&contadorJugadasTotalesOp2))
+                        {
+                            mejorJugada1Op[0]=i;
+                            mejorJugada1Op[1]=j;
+                            mejorJugada1Op[2]=iDest;
+                            mejorJugada1Op[3]=jDest;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    int a=1;
+    int numAleatorio1,numAleatorio2,numAleatorio3,numAleatorio4;
+    valorJugadaTotal2=valorSegundaMejorJugada-valorMaxArray(mejoresJugadasOp,&contadorJugadasTotalesOp2);
+    tablero[mejorJugada1[2]][mejorJugada1[3]]=loQueHabiaFin;
+    tablero[mejorJugada1[0]][mejorJugada1[1]]=loQueHabiaInic;
+    int contadorDeEmergencia=0;
+    if (valorJugadaTotal2!=valorJugadaTotal1)
+    {
+        if (valorJugadaTotal1>valorJugadaTotal2)
+        {
+            tablero[mejorJugada1[2]][mejorJugada1[3]]=tablero[mejorJugada1[0]][mejorJugada1[1]];
+            tablero[mejorJugada1[0]][mejorJugada1[1]]="  ";
+        }
+        else
+        {
+            tablero[sdaMejorJugada1[2]][sdaMejorJugada1[3]]=tablero[sdaMejorJugada1[0]][sdaMejorJugada1[1]];
+            tablero[sdaMejorJugada1[0]][sdaMejorJugada1[1]]="  ";
+        }
     }
     else
     {
-        if(turno==   Matrizcolor[i][j])
-        {    if( MatrizTipo[i][j]!='V')
+        if (tablero[mejorJugada1[2]][mejorJugada1[3]]!=tablero[mejorJugada1[0]][mejorJugada1[1]])
+        {
+            tablero[mejorJugada1[2]][mejorJugada1[3]]=tablero[mejorJugada1[0]][mejorJugada1[1]];
+            tablero[mejorJugada1[0]][mejorJugada1[1]]="  ";
+        }
+        else
+        {
+            //algoritmoDeMovimientoAleatorio(tablero)
+            while (a!=0)
             {
-                MatrizSeleccion[i][j]=1;
-                pregunta( i,  j,Matrizcolor[i][j]) ;
+                numAleatorio1=numAleatorio07();
+                numAleatorio2=numAleatorio07();
+                numAleatorio3=numAleatorio07();
+                numAleatorio4=numAleatorio07();
+
+                if (movimientoPieza(numAleatorio1,numAleatorio2,numAleatorio3,numAleatorio4,tablero))
+                {
+                    a=0;
+                    tablero[numAleatorio1][numAleatorio2]=tablero[numAleatorio3][numAleatorio4];
+                    tablero[numAleatorio1][numAleatorio2]=tablero[numAleatorio3][numAleatorio4];
+                }
+                else
+                {
+                    contadorDeEmergencia++;
+                }
+                if (contadorDeEmergencia>2500)
+                {
+                    break;
+                    cout<<endl<<"Se uso salida de emergencia del algorimo de movimiento aleatorio"<<endl;
+                }
 
             }
         }
 
     }
-
-}
-void __fastcall TFrmCuadro::PeonNegroN1Click(TObject *Sender)
-{
-
-    piezatipo(1,0);
-}
-
-
-
-//---------------------------------------------------------------------------
-
-//estos eventos se pueden asignar de forma dinamica
-//Pero eso es un tanto elevado y el codigo que esta
-//aqui se puede reducir mas y compactar pero despues es
-//dificil de entender, como un lenguaje de funciones.
-void __fastcall TFrmCuadro::movercaballo(int fila, int columna){
-
-
-    ShowMessage("HOLA");
-}
-void __fastcall TFrmCuadro::PeonNegroB1Click(TObject *Sender)
-{
-    piezatipo(1,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonNegroN2Click(TObject *Sender)
-{
-    piezatipo(1,2);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonNegroB2Click(TObject *Sender)
-{
-    piezatipo(1,3);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonNegroN3Click(TObject *Sender)
-{
-    piezatipo(1,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonNegroB3Click(TObject *Sender)
-{
-    piezatipo(1,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonNegroN4Click(TObject *Sender)
-{
-    piezatipo(1,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonNegroB4Click(TObject *Sender)
-{
-    piezatipo(1,7);
-}
-//---------------------------------------------------------------------------
-
-
-
-
-void __fastcall TFrmCuadro::TorreNegraBClick(TObject *Sender)
-{
-    piezatipo(0,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::CaballoNegroNClick(TObject *Sender)
-{
-    piezatipo(0,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::CaballoBlancoBClick(TObject *Sender)
-{
-    piezatipo(7,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::TorreBlancaNClick(TObject *Sender)
-{
-    piezatipo(7,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::AlfilBlancoNClick(TObject *Sender)
-{
-    piezatipo(7,2);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::DamaBlancaBClick(TObject *Sender)
-{
-    piezatipo(7,3);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::ReyBlancoNClick(TObject *Sender)
-{
-    piezatipo(7,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::AlfilBlancoBClick(TObject *Sender)
-{
-    piezatipo(7,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::CaballoBlancoNClick(TObject *Sender)
-{
-    piezatipo(7,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::TorreBlancaBClick(TObject *Sender)
-{
-    piezatipo(7,7);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoB1Click(TObject *Sender)
-{
-    piezatipo(6,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoN1Click(TObject *Sender)
-{
-    piezatipo(6,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoB2Click(TObject *Sender)
-{
-    piezatipo(6,2);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoN2Click(TObject *Sender)
-{
-    piezatipo(6,3);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoB3Click(TObject *Sender)
-{
-    piezatipo(6,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoN3Click(TObject *Sender)
-{
-    piezatipo(6,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoB4Click(TObject *Sender)
-{
-    piezatipo(6,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::PeonBlancoN4Click(TObject *Sender)
-{
-    piezatipo(6,7);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN13Click(TObject *Sender)
-{
-    piezatipo(5,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB13Click(TObject *Sender)
-{
-    piezatipo(5,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN14Click(TObject *Sender)
-{
-    piezatipo(5,2);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB14Click(TObject *Sender)
-{
-    piezatipo(5,3);
-}
-//---------------------------------------------------------------------------
-
-
-
-void __fastcall TFrmCuadro::VacioN15Click(TObject *Sender)
-{
-    piezatipo(5,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB15Click(TObject *Sender)
-{
-    piezatipo(5,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN16Click(TObject *Sender)
-{
-    piezatipo(5,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB16Click(TObject *Sender)
-{
-    piezatipo(5,7);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB9Click(TObject *Sender)
-{
-    piezatipo(4,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN9Click(TObject *Sender)
-{
-    piezatipo(4,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB10Click(TObject *Sender)
-{
-    piezatipo(4,2);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN10Click(TObject *Sender)
-{
-    piezatipo(4,3);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB11Click(TObject *Sender)
-{
-    piezatipo(4,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN11Click(TObject *Sender)
-{
-    piezatipo(4,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB12Click(TObject *Sender)
-{
-    piezatipo(4,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN12Click(TObject *Sender)
-{
-    piezatipo(4,7);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN5Click(TObject *Sender)
-{
-    piezatipo(3,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB5Click(TObject *Sender)
-{
-    piezatipo(3,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN6Click(TObject *Sender)
-{
-    piezatipo(3,2);
+    turno=turno*-1;
 }
-//---------------------------------------------------------------------------
 
-void __fastcall TFrmCuadro::VacioB6Click(TObject *Sender)
-{
-    piezatipo(3,3);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN7Click(TObject *Sender)
-{
-    piezatipo(3,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB7Click(TObject *Sender)
-{
-    piezatipo(3,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN8Click(TObject *Sender)
-{
-    piezatipo(3,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB8Click(TObject *Sender)
-{
-    piezatipo(3,7);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB1Click(TObject *Sender)
-{
-    piezatipo(2,0);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN1Click(TObject *Sender)
-{
-    piezatipo(2,1);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB2Click(TObject *Sender)
-{
-    piezatipo(2,2);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN2Click(TObject *Sender)
-{
-    piezatipo(2,3);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB3Click(TObject *Sender)
-{
-    piezatipo(2,4);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN3Click(TObject *Sender)
-{
-    piezatipo(2,5);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioB4Click(TObject *Sender)
-{
-    piezatipo(2,6);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::VacioN4Click(TObject *Sender)
-{
-    piezatipo(2,7);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TFrmCuadro::AlfilNegroBClick(TObject *Sender)
-{
-    piezatipo(0,2);
-}
-//---------------------------------------------------------------------------
 
-void __fastcall TFrmCuadro::DamaNegraNClick(TObject *Sender)
+int main ()
 {
-    piezatipo(0,3);
-}
-//---------------------------------------------------------------------------
+    string tablero[8][8];  //definición de tablero
 
-void __fastcall TFrmCuadro::ReyNegroBClick(TObject *Sender)
-{
-    piezatipo(0,4);
-}
-//---------------------------------------------------------------------------
+    iniciaTablero(tablero);
+    impTablero(tablero);
 
-void __fastcall TFrmCuadro::AlfilNegroNClick(TObject *Sender)
-{
-    piezatipo(0,5);
-}
-//---------------------------------------------------------------------------
+    while (juegoTerminado(tablero)==false)
+    {
+        if (turno==1)
+        {
+            moverPieza(tablero);
+            impTablero(tablero);
+        }
+        if (turno==-1)
+        {
+            algoritmoShuperLoco(tablero);
+            impTablero(tablero);
+            turno=turno*-1;
+        }
+    }
 
-void __fastcall TFrmCuadro::CaballoNegroBClick(TObject *Sender)
-{
-    piezatipo(0,6);
-}
-//---------------------------------------------------------------------------
+    int noTeCierres;
+    cin>>noTeCierres;
 
-void __fastcall TFrmCuadro::TorreNegraNClick(TObject *Sender)
-{
-    piezatipo(0,7);
 }
-//---------------------------------------------------------------------------
