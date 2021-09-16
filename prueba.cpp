@@ -108,91 +108,36 @@ void impTablero()//string tablero[8][8])
     }
 }
 
-void llenado_de_tablerop1() {
 
-    for(int i = 0; i <8; i++){
-        for(int j=0; j<8; j++){
+void iniciaTablero()
+{
 
-            if(i == 1){
-                tablero[j][i] = piezas1[0];
-
-
-            }else if((i==0) && (j==0|| j==7)){
-                tablero[j][i]=piezas1[1];
-
-
-            }else if((i==0) && (j==1|| j==6)){
-                tablero[j][i] = piezas1[2];
-
-
-            }else if((i==0) && (j==2|| j==5)){
-                tablero[j][i] = piezas1[3];
-
-
-            }else if(i==0  && (j==3)){
-                tablero[j][i]= piezas1[4];
-
-
-            }else if( i == 0  && (j==4)){
-                tablero[j][i]= piezas1[5];
-
-
-            }
-
-        }
+    for (int i=0;i<8;i++)
+    {
+        tablero[i][1]=piezas1[0];   //ubicación de peones
+        tablero[i][6]=piezas2[0];
     }
+
+    tablero[0][0]=piezas1[1];
+    tablero[1][0]=piezas1[2];    //ubicación otras piezas jugador 1
+    tablero[2][0]=piezas1[3];
+    tablero[3][0]=piezas1[4];
+    tablero[4][0]=piezas1[5];
     for (int i=5;i<8;i++)
     {
         tablero[i][0]=tablero[7-i][0];
     }
-    for (int i=0;i<8;i++)
-    {
-        for (int j=0;j<8;j++)
-        {
-            if (tablero[i][j]=="\0")    //Dibujando espacitos vacíos
-            {
-                tablero[i][j]="  ";
-            }
-        }
-    }
-}
-void llenado_de_tablerop2() {
+    tablero[0][7]=piezas2[1];
+    tablero[1][7]=piezas2[2];
+    tablero[2][7]=piezas2[3];
+    tablero[3][7]=piezas2[4];    //ubicación otras piezas jugador 2
+    tablero[4][7]=piezas2[5];
 
-    for(int i = 0; i <8; i++){
-        for(int j=0; j<8; j++){
-
-            if(i == 6){
-                tablero[j][i] = piezas2[0];
-
-
-            }else if((i ==7) && (j==0|| j==7)){
-                tablero[j][i]=piezas2[1];
-
-
-            }else if((i==7) && (j==1|| j==6)){
-                tablero[j][i] = piezas2[2];
-
-
-            }else if((i==7) && (j==2|| j==5)){
-                tablero[j][i] = piezas2[3];
-
-
-            }else if(i==7  && (j==3)){
-                tablero[j][i]= piezas2[4];
-
-
-            }else if( i == 7  && (j==4)){
-                tablero[j][i]= piezas2[5];
-
-
-            }
-
-        }
-    }
     for (int i=5;i<8;i++)
     {
         tablero[i][7]=tablero[7-i][7];
     }
+
     for (int i=0;i<8;i++)
     {
         for (int j=0;j<8;j++)
@@ -204,6 +149,8 @@ void llenado_de_tablerop2() {
         }
     }
 }
+
+
 
 bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[8][8])
 {
@@ -424,7 +371,7 @@ bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[
     if ((tablero[xinic][yinic]=="q1")||(tablero[xinic][yinic]=="q2"))
     {
         saltoPieza=false;
-        if ((xfin-xinic)==(yinic-yfin)||(xinic==xfin)||(yinic==yfin))
+        if (abs((xfin-xinic))==abs((yinic-yfin))||(xinic==xfin)||(yinic==yfin))
         {
             if ((xfin-xinic-1>0)&&(yfin-yinic-1>0))
             {
@@ -470,7 +417,6 @@ bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[
                 }
 
             }
-
             if (xinic==xfin)
             {
                 if (yfin>yinic+1)
@@ -1021,9 +967,9 @@ int main ()
 {
     //string tablero[8][8];  //definición de tablero
 
-    llenado_de_tablerop1();
-    llenado_de_tablerop2();
-    //iniciaTablero(tablero);
+  /*  llenado_de_tablerop1();
+    llenado_de_tablerop2();*/
+    iniciaTablero();
     impTablero(/*tablero*/);
 
     while (juegoTerminado(/*tablero*/)==false)
