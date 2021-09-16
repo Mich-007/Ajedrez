@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-
+#include <fstream>
 using namespace::std;
 string tablero[8][8];
 string piezas1[6]={"p1", "t1", "c1", "a1", "q1", "k1"};
@@ -9,7 +9,7 @@ string piezas2[6]={"p2", "t2", "c2", "a2", "q2", "k2"};
 char number[8]={'1','2','3','4','5','6','7','8'};
 char letter[8]={'a','b','c','d','e','f','g','h'};
 int turno=0;
-
+ofstream file;
 
 
 void impTablero()//string tablero[8][8])
@@ -525,6 +525,7 @@ void moverPieza(string coordinic, string coordfin)//string tablero[8][8])
     {
         tablero[c2i(coordfin[0])][c2i(coordfin[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
         tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+
     }
     else
         cout<<"Movimiento incorrecto"<<c2i(coordfin[0])<<c2i(coordfin[1])<<c2i(coordinic[0])<<c2i(coordinic[1])<<endl;
@@ -560,11 +561,14 @@ int main ()
 {
     string coordinic;
     string coordfin;
+    int cont=1;
     iniciaTablero();
     impTablero();
+    file.open("registro.txt");
 
-    while (juegoTerminado(/*tablero*/)==false)
+    do
     {
+        cout << "Se está jugando el turno #"<<cont<<endl;
         if (turno%2==0)
         {
             cout<<" Jugador 1, ingrese la coordenada de la pieza que quiere jugar:"<<endl;
@@ -572,6 +576,7 @@ int main ()
             cout<<" Jugador 1, ingrese la coordenada donde quiere enviar la pieza:"<<endl;
             cin>>coordfin;
             moverPieza(coordinic, coordfin);
+            file<<cont<<". J1: "<<coordfin<<", ";
             impTablero();
         }
         if (turno%2!=0)
@@ -582,11 +587,13 @@ int main ()
             cin>>coordfin;
             moverPieza(coordinic, coordfin);
             impTablero();
-
+            file<<"J2: "<<coordfin<<"\n";
+            cont++;
         }
         turno++;
-    }
+    }while (juegoTerminado()==false);
 
+    file.close();
     cout << "Gracias por jugar" << endl;
 
 }
