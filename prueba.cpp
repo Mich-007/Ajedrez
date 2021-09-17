@@ -525,7 +525,7 @@ void moverPieza(string coordinic, string coordfin)//string tablero[8][8])
     {
         tablero[c2i(coordfin[0])][c2i(coordfin[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
         tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
-
+        file << tablero[c2i(coordfin[0])][c2i(coordfin[1])];
     }
     else
         cout<<"Movimiento incorrecto"<<c2i(coordfin[0])<<c2i(coordfin[1])<<c2i(coordinic[0])<<c2i(coordinic[1])<<endl;
@@ -571,12 +571,13 @@ int main ()
         cout << "Se está jugando el turno #"<<cont<<endl;
         if (turno%2==0)
         {
+            file<<cont<<". ";
             cout<<" Jugador 1, ingrese la coordenada de la pieza que quiere jugar:"<<endl;
             cin>>coordinic;
             cout<<" Jugador 1, ingrese la coordenada donde quiere enviar la pieza:"<<endl;
             cin>>coordfin;
             moverPieza(coordinic, coordfin);
-            file<<cont<<". J1: "<<coordfin<<", ";
+            file<<coordfin<<", ";
             impTablero();
         }
         if (turno%2!=0)
@@ -587,7 +588,7 @@ int main ()
             cin>>coordfin;
             moverPieza(coordinic, coordfin);
             impTablero();
-            file<<"J2: "<<coordfin<<"\n";
+            file<<coordfin<<"\n";
             cont++;
         }
         turno++;
