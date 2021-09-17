@@ -379,10 +379,7 @@ bool movReina(int xinic,int yinic,int xfin, int yfin){
         }
     }
 
-        /* if (saltoPieza=true)
-         {
-             i= false;
-         }*/
+
     else if (tablero[xfin][yfin][1]!=tablero[xinic][yinic][1])
     {
         i= true;
@@ -390,7 +387,7 @@ bool movReina(int xinic,int yinic,int xfin, int yfin){
     return i;
 }
 
-
+bool movEnroque(){}
 
 bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[8][8])
 {
@@ -503,33 +500,37 @@ void celdaFinal (string coordfin)
     }
 }
 
-void moverPieza(string coordinic, string coordfin)//string tablero[8][8])
+bool moverPieza(string coordinic, string coordfin)//string tablero[8][8])
 {
 
+    bool ver = false;
+   // char verificador='z';
 
-    char verificador='z';
-
-    while (verificador!='s')
-    {
-        celdaInicial(coordinic);//,tablero);
-        celdaFinal(coordfin);// tablero);
-        cout<<"Esta seguro que desea mover su "<<tablero[c2i(coordinic[0])][c2i(coordinic[1])]<<" a "<<coordfin<<"? (s/n)"<<endl;
+   // while (verificador!='s')
+   // {
+        // tablero);
+        /*cout<<"Esta seguro que desea mover su "<<tablero[c2i(coordinic[0])][c2i(coordinic[1])]<<" a "<<coordfin<<"? (s/n)"<<endl;
         cin>>verificador;
         while (verificador!='s'&&verificador!='n')
         {
             cout<<"Ingrese opcion correcta"<<endl;
             cin>>verificador;
-        }
-    }
-    if (movimientoPieza(c2i(coordinic[0]),c2i(coordinic[1]),c2i(coordfin[0]),c2i(coordfin[1])))//,tablero))
+        }*/
+    //}
+    if (movimientoPieza(c2i(coordinic[0]),c2i(coordinic[1]),c2i(coordfin[0]),c2i(coordfin[1]))==true)
     {
+        celdaInicial(coordinic);//,tablero);
+        celdaFinal(coordfin);
         tablero[c2i(coordfin[0])][c2i(coordfin[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
         tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
         file << tablero[c2i(coordfin[0])][c2i(coordfin[1])];
+        ver = true;
     }
-    else
-        cout<<"Movimiento incorrecto"<<c2i(coordfin[0])<<c2i(coordfin[1])<<c2i(coordinic[0])<<c2i(coordinic[1])<<endl;
+    else {
 
+        ver = false;
+    }
+    return  ver;
 }
 
 bool juegoTerminado()
@@ -561,6 +562,7 @@ int main ()
 {
     string coordinic;
     string coordfin;
+    bool ver = false;
     int cont=1;
     iniciaTablero();
     impTablero();
@@ -571,22 +573,32 @@ int main ()
         cout << "Se está jugando el turno #"<<cont<<endl;
         if (turno%2==0)
         {
+            do {
+                cout << " Jugador 1, ingrese la coordenada de la pieza que quiere jugar:" << endl;
+                cin >> coordinic;
+                cout << " Jugador 1, ingrese la coordenada donde quiere enviar la pieza:" << endl;
+                cin >> coordfin;
+                ver=moverPieza(coordinic, coordfin);
+                if(ver==false){
+                    cout << "Movimiento incorrecto" << c2i(coordfin[0]) << c2i(coordfin[1]) << c2i(coordinic[0])<< c2i(coordinic[1]) << endl;
+                }
+            }while(ver==false);
             file<<cont<<". ";
-            cout<<" Jugador 1, ingrese la coordenada de la pieza que quiere jugar:"<<endl;
-            cin>>coordinic;
-            cout<<" Jugador 1, ingrese la coordenada donde quiere enviar la pieza:"<<endl;
-            cin>>coordfin;
-            moverPieza(coordinic, coordfin);
             file<<coordfin<<", ";
             impTablero();
         }
         if (turno%2!=0)
         {
-            cout<<" Jugador 2, ingrese la coordenada de la pieza que quiere jugar:"<<endl;
-            cin>>coordinic;
-            cout<<" Jugador 2, ingrese la coordenada donde quiere enviar la pieza:"<<endl;
-            cin>>coordfin;
-            moverPieza(coordinic, coordfin);
+            do {
+                cout << " Jugador 2, ingrese la coordenada de la pieza que quiere jugar:" << endl;
+                cin >> coordinic;
+                cout << " Jugador 2, ingrese la coordenada donde quiere enviar la pieza:" << endl;
+                cin >> coordfin;
+                ver = moverPieza(coordinic, coordfin);
+                if(ver==false){
+                    cout << "Movimiento incorrecto" << c2i(coordfin[0]) << c2i(coordfin[1]) << c2i(coordinic[0])<< c2i(coordinic[1]) << endl;
+                }
+            }while(ver==false);
             impTablero();
             file<<coordfin<<"\n";
             cont++;
