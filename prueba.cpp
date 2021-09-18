@@ -108,6 +108,16 @@ void impTablero()//string tablero[8][8])
     }
 }
 
+int c2i( char a) {
+    int cont = 0;
+    for (int i = 0; i < 8; ++i) {
+        if (a == number[i] || a == letter[i]) {
+            cont = i;
+        }
+
+    }
+    return cont;
+}
 
 void iniciaTablero()
 {
@@ -387,8 +397,76 @@ bool movReina(int xinic,int yinic,int xfin, int yfin){
     return i;
 }
 
-bool movEnroque(){}
+bool casosEspeciales(string coordinic, string coordfin){
+    bool ver= false;
+    if (tablero[0][0]=="t1"&&tablero[1][0]=="  "&&tablero[2][0]=="  "&&tablero[3][0]=="  "&&tablero[4][0]=="k1"){
+        tablero[c2i(coordinic[0])-2][c2i(coordinic[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
+        tablero[c2i(coordfin[0])+3][c2i(coordfin[1])]=tablero[c2i(coordfin[0])][c2i(coordfin[1])];
+        tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+        tablero[c2i(coordfin[0])][c2i(coordfin[1])]="  ";
+        ver = true;
+    }else if(tablero[4][0]=="k1"&&tablero[5][0]=="  "&&tablero[6][0]=="  "&&tablero[7][0]=="t1"){
+        tablero[c2i(coordinic[0])+2][c2i(coordinic[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
+        tablero[c2i(coordfin[0])-2][c2i(coordfin[1])]=tablero[c2i(coordfin[0])][c2i(coordfin[1])];
+        tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+        tablero[c2i(coordfin[0])][c2i(coordfin[1])]="  ";
+        ver = true;
+    }else if (tablero[0][7]=="t2"&&tablero[1][7]=="  "&&tablero[2][7]=="  "&&tablero[3][7]=="  "&&tablero[4][7]=="k2"){
+        tablero[c2i(coordinic[0])-2][c2i(coordinic[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
+        tablero[c2i(coordfin[0])+3][c2i(coordfin[1])]=tablero[c2i(coordfin[0])][c2i(coordfin[1])];
+        tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+        tablero[c2i(coordfin[0])][c2i(coordfin[1])]="  ";
+        ver = true;
+    }else if(tablero[4][7]=="k2"&&tablero[5][7]=="  "&&tablero[6][7]=="  "&&tablero[7][7]=="t2"){
+        tablero[c2i(coordinic[0])+2][c2i(coordinic[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
+        tablero[c2i(coordfin[0])-2][c2i(coordfin[1])]=tablero[c2i(coordfin[0])][c2i(coordfin[1])];
+        tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+        tablero[c2i(coordfin[0])][c2i(coordfin[1])]="  ";
+        ver = true;
+    }else{
+        ver=false;
+    }
 
+    return ver;
+}
+/*
+bool movEnroque(int xinic,int yinic,int xfin, int yfin){
+    bool ver= false;
+    if (tablero[0][0]=="t1"&&tablero[1][0]==" "&&tablero[2][0]==" "&&tablero[3][0]==" "&&tablero[4][0]=="k1"&&tablero[5][0]==" "&&tablero[6][0]==" "&&tablero[7][0]=="t1"){
+        if ((tablero[xinic][yinic] == "k1") || (tablero[xinic][yinic] == "k2")) {
+            if ((tablero[xfin][yfin] == "t1") || (tablero[xfin][yfin] == "t2")) {
+                tablero[xinic][yinic]=tablero[][c2i(coordinic[1])];
+                tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+            }
+        }
+        ver = true;
+    }else if(tablero[0][0]=="t1"&&tablero[1][0]=="c1"&&tablero[2][0]=="a1"&&tablero[3][0]=="q1"&&tablero[4][0]=="k1"&&tablero[5][0]==" "&&tablero[6][0]==" "&&tablero[7][0]=="t1"){
+        ver = true;
+    }else if(tablero[0][0]=="t1"&&tablero[1][0]==" "&&tablero[2][0]==" "&&tablero[3][0]==" "&&tablero[4][0]=="k1"&&tablero[5][0]=="a1"&&tablero[6][0]=="c1"&&tablero[7][0]=="t1"){
+        ver = true;
+    }else if (tablero[0][7]=="t2"&&tablero[1][7]==" "&&tablero[2][7]==" "&&tablero[3][7]==" "&&tablero[4][7]=="k2"&&tablero[5][7]==" "&&tablero[6][7]==" "&&tablero[7][7]=="t2"){
+        ver = true;
+    }else if(tablero[0][7]=="t2"&&tablero[1][7]=="c2"&&tablero[2][7]=="a2"&&tablero[3][7]=="q2"&&tablero[4][7]=="k2"&&tablero[5][7]==" "&&tablero[6][7]==" "&&tablero[7][7]=="t2"){
+        ver = true;
+    }else if(tablero[0][7]=="t2"&&tablero[1][7]==" "&&tablero[2][7]==" "&&tablero[3][7]==" "&&tablero[4][7]=="k2"&&tablero[5][7]=="a2"&&tablero[6][7]=="c2"&&tablero[7][7]=="t2"){
+        ver = true;
+    }else{
+        ver=false;
+    }
+
+    return ver;
+    if (casosEspeciales() == true){
+        if ((tablero[xinic][yinic] == "k1") || (tablero[xinic][yinic] == "k2")){
+            if ((tablero[xfin][yfin] == "t1") || (tablero[xfin][yfin] == "t2")){
+
+                tablero[c2i(coordfin[0])][c2i(coordfin[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
+                tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
+            }
+        }
+    }
+
+}
+*/
 bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[8][8])
 {
     bool i = false;
@@ -418,16 +496,7 @@ bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[
     }
     return i;
 }
-int c2i( char a) {
-    int cont = 0;
-    for (int i = 0; i < 8; ++i) {
-        if (a == number[i] || a == letter[i]) {
-            cont = i;
-        }
 
-    }
-    return cont;
-}
 
 void verificacion(string coord){
     bool verificacion1 = false;
@@ -504,27 +573,20 @@ bool moverPieza(string coordinic, string coordfin)//string tablero[8][8])
 {
 
     bool ver = false;
-   // char verificador='z';
-
-   // while (verificador!='s')
-   // {
-        // tablero);
-        /*cout<<"Esta seguro que desea mover su "<<tablero[c2i(coordinic[0])][c2i(coordinic[1])]<<" a "<<coordfin<<"? (s/n)"<<endl;
-        cin>>verificador;
-        while (verificador!='s'&&verificador!='n')
-        {
-            cout<<"Ingrese opcion correcta"<<endl;
-            cin>>verificador;
-        }*/
-    //}
+    bool ver2 = false;
     if (movimientoPieza(c2i(coordinic[0]),c2i(coordinic[1]),c2i(coordfin[0]),c2i(coordfin[1]))==true)
     {
-        celdaInicial(coordinic);//,tablero);
+        celdaInicial(coordinic);
         celdaFinal(coordfin);
         tablero[c2i(coordfin[0])][c2i(coordfin[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
         tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
         file << tablero[c2i(coordfin[0])][c2i(coordfin[1])];
         ver = true;
+    }else if(ver == false){
+        ver2=casosEspeciales(coordinic,coordfin);
+        if(ver2==true) {
+            ver = true;
+        }
     }
     else {
 
