@@ -159,45 +159,7 @@ void iniciaTablero()
         }
     }
 }
-/*
-void verificacion2(string coord){
-    bool verificacion1 = false;
-    // bool verificacion2 = false;
-    do {
-        for (int i = 0; i < 6; ++i) {
-            if (coord == piezas1[i]||coord==piezas2[i]){
-                verificacion1 = true;
-            }
-        }
-        if (verificacion1 == false ) {
-            cout << "La pieza ingresada no es valida, ingrese una valida" << endl;
-            cin >> coord;
-        }
-    }while(verificacion1==false);
-}
-bool coronar( int xfin, int yfin){
-    bool ver = false;
-    string pieza;
-    if (tablero[0][0]=="p2"||tablero[1][0]=="p2"||tablero[2][0]=="p2"||tablero[3][0]=="p2"||tablero[4][0]=="p2"||tablero[5][0]=="p2"||tablero[6][0]=="p2"||tablero[7][0]=="p2"){
-        cout << "Ha logrado coronar un peon, escoja una pieza por la cual lo quiere cambiar(t2, c2, a2, q2)"
-             << endl;
-        cin >> pieza;
-        verificacion2(pieza);
-        tablero[xfin][yfin]="  ";
-        tablero[xfin][yfin]=pieza;
-        ver = true;
-    }else if (tablero[0][7]=="p1"||tablero[1][7]=="p1"||tablero[2][7]=="p1"||tablero[3][7]=="p1"||tablero[4][7]=="p1"||tablero[5][7]=="p1"||tablero[6][7]=="p1"||tablero[7][7]=="p1"){
-        cout<<"Ha logrado coronar un peon, escoja una pieza por la cual lo quiere cambiar(t1, c1, a1, q1)" <<endl;
-        cin>>pieza;
-        verificacion2(pieza);
-        ver = true;
-        tablero[xfin][yfin]="  ";
-        tablero[xfin][yfin]=pieza;
-    }else{
-        ver=false;
-    }
-    return ver;
-}*/
+
 bool movPeon(int xinic,int yinic,int xfin, int yfin){
     bool i=false;
     int a=0;
@@ -231,10 +193,7 @@ bool movPeon(int xinic,int yinic,int xfin, int yfin){
             {
                 i= true;
             }
-        }/* else if(yfin==0||yfin==7){
-            coronar(xfin, yfin);
-            i=true;
-        }*/
+        }
         else
         {
             i= false;
@@ -473,7 +432,7 @@ bool casosEspeciales(string coordinic, string coordfin){
     return ver;
 }
 
-bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)//, string tablero[8][8])
+bool movimientoPieza (int xinic,int yinic,int xfin, int yfin)
 {
     bool i = false;
     if ((xinic == xfin) && (yinic == yfin)) {
@@ -554,37 +513,43 @@ void celdaInicial (string coordinic)
 
 }
 
-void celdaFinal (string coordfin)
+bool celdaFinal (string coordfin)
 {
     bool turnoCorrecto=false;
 
-    while (turnoCorrecto==false)
-    {
+    
         verificacion(coordfin);
         if (((tablero[c2i(coordfin[0])][c2i(coordfin[1])][1]=='1')&&(turno%2==0))
             ||((tablero[c2i(coordfin[0])][c2i(coordfin[1])][1]=='2')&&(turno%2!=0)))
         {
-            turnoCorrecto=false;
             cout<<"No puedes comerte piezas aliadas"<<endl;
-            //*****************************
+            turnoCorrecto=false;
+            
+            
         }
         else
         {
             turnoCorrecto=true;
         }
 
-    }
+    
+    return turnoCorrecto;
 }
 
-bool moverPieza(string coordinic, string coordfin)//string tablero[8][8])
+bool moverPieza(string coordinic, string coordfin)
 {
 
     bool ver = false;
     bool ver2 = false;
+    bool ver3 = false;
     if (movimientoPieza(c2i(coordinic[0]),c2i(coordinic[1]),c2i(coordfin[0]),c2i(coordfin[1]))==true)
     {
         celdaInicial(coordinic);
-        celdaFinal(coordfin);
+        ver3=celdaFinal(coordfin);
+        if(ver3==false){
+            ver = false;
+            return ver;
+        } 
         tablero[c2i(coordfin[0])][c2i(coordfin[1])]=tablero[c2i(coordinic[0])][c2i(coordinic[1])];
         tablero[c2i(coordinic[0])][c2i(coordinic[1])]="  ";
         file << tablero[c2i(coordfin[0])][c2i(coordfin[1])];
